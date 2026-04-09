@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Masters Pool 2026</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:system-ui,-apple-system,sans-serif;background:#f4f1ec;color:#111;min-height:100vh}
+.app{max-width:920px;margin:0 auto;padding:1rem}
+.header{background:#1a5c2e;color:#fff;border-radius:12px;padding:1.25rem 1.5rem;margin-bottom:1rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px}
+.header h1{font-size:20px;font-weight:600}
+.header-sub{font-size:12px;opacity:0.75;margin-top:2px}
+.badge{background:rgba(255,255,255,0.18);border-radius:6px;padding:3px 10px;font-size:12px}
+.card{background:#fff;border:1px solid #e0ddd6;border-radius:12px;padding:1.25rem;margin-bottom:1rem}
+.card-title{font-size:11px;font-weight:600;color:#888;text-transform:uppercase;letter-spacing:0.6px;margin-bottom:1rem}
+input,select{width:100%;padding:9px 12px;border:1px solid #d0cdc6;border-radius:8px;font-size:14px;background:#fff;color:#111;outline:none;transition:border-color 0.15s;font-family:inherit}
+input:focus,select:focus{border-color:#1a5c2e;box-shadow:0 0 0 3px rgba(26,92,46,0.1)}
+label{display:block;font-size:12px;color:#666;margin-bottom:4px;font-weight:600}
+.btn{padding:9px 20px;border-radius:8px;border:1px solid #d0cdc6;background:#fff;color:#111;font-size:14px;cursor:pointer;transition:all 0.15s;font-family:inherit;font-weight:500}
+.btn:hover{background:#f5f5f0}
+.btn-primary{background:#1a5c2e;color:#fff;border-color:#1a5c2e}
+.btn-primary:hover{background:#145024}
+.btn-danger{background:#c0392b;color:#fff;border-color:#c0392b}
+.btn-sm{padding:5px 12px;font-size:12px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:600px){.grid2{grid-template-columns:1fr}}
+.stat-card{background:#f5f5f0;border-radius:8px;padding:12px;text-align:center}
+.stat-val{font-size:26px;font-weight:700;color:#1a5c2e}
+.stat-lbl{font-size:11px;color:#888;margin-top:2px}
+.tab-bar{display:flex;gap:4px;margin-bottom:1rem;background:#e8e5df;padding:4px;border-radius:10px;flex-wrap:wrap}
+.tab{flex:1;min-width:80px;padding:8px 4px;text-align:center;border-radius:8px;cursor:pointer;font-size:13px;font-weight:500;color:#666;border:none;background:transparent;font-family:inherit;transition:all 0.15s}
+.tab.active{background:#fff;color:#1a5c2e;box-shadow:0 1px 3px rgba(0,0,0,0.1)}
+.standings-row{display:grid;grid-template-columns:36px 1fr 80px 80px;gap:8px;align-items:center;padding:10px 12px;border-radius:8px;margin-bottom:4px;font-size:14px}
+.standings-row:nth-child(odd){background:#f9f8f5}
+.standings-row.me{background:#e6f4ec;border:1px solid #a8d5b5}
+.rank-badge{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;background:#e8e5df;color:#666}
+.rank-1{background:#f0c030;color:#7a5e00}
+.rank-2{background:#c8d0d8;color:#3a4248}
+.rank-3{background:#c8956a;color:#5a3010}
+.golfer-tag{display:inline-flex;align-items:center;gap:3px;background:#eee;border-radius:4px;padding:2px 6px;font-size:11px;margin:2px}
+.golfer-tag .gpts{color:#1a5c2e;font-weight:700}
+.tbl{width:100%;border-collapse:collapse;font-size:13px}
+.tbl th{text-align:left;padding:7px 8px;font-size:11px;font-weight:600;color:#888;border-bottom:1px solid #e8e5df;background:#fafaf8}
+.tbl td{padding:8px;border-bottom:1px solid #f0ede8}
+.tbl tr:last-child td{border-bottom:none}
+.score-neg{color:#1a5c2e;font-weight:700}
+.score-pos{color:#c0392b;font-weight:700}
+.score-e{color:#888}
+.cut-badge{font-size:10px;padding:2px 6px;border-radius:4px;background:#fce8e8;color:#c0392b;font-weight:600}
+.alert{padding:10px 14px;border-radius:8px;font-size:13px;margin-bottom:1rem;line-height:1.5}
+.alert-info{background:#e8f0fb;color:#1a4a8a;border:1px solid #b8d0f0}
+.alert-gold{background:#fdf6e3;color:#7a5e00;border:1px solid #f0d060}
+.alert-green{background:#e6f4ec;color:#1a5c2e;border:1px solid #a8d5b5}
+.divider{height:1px;background:#f0ede8;margin:1rem 0}
+.potential{color:#2d7d9a;font-weight:600}
+.empty{text-align:center;color:#aaa;padding:2rem;font-size:13px}
+.live-badge{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:600;color:#c0392b}
+.live-dot{width:7px;height:7px;border-radius:50%;background:#c0392b;display:inline-block;animation:pulse 1.2s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.4;transform:scale(0.7)}}
+
+select.pick-sel{height:44px;background:#fff url('data:image/svg+xml;charset=US-ASCII,%3Csvg xmlns%3D"http%3A//www.w3.org/2000/svg" width%3D"12" height%3D"12"%3E%3Cpath fill%3D"%231a5c2e" d%3D"M6 8L1 3h10z"/%3E%3C/svg%3E') no-repeat right 12px center;-webkit-appearance:none;appearance:none;padding-right:32px}
+</style>
+</head>
+<body>
+<div id="root"><div class="loading">Loading Masters Pool 2026...</div></div>
+
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyBOHIntsIh3ox1ruQUrmb4LjnsPbR5k9hs",
+  authDomain: "masterspool-88958.firebaseapp.com",
+  projectId: "masterspool-88958",
+  databaseURL: "https://masterspool-88958-default-rtdb.firebaseio.com",
+  storageBucket: "masterspool-88958.firebasestorage.app",
+  messagingSenderId: "794608750341",
+  appId: "1:794608750341:web:32d2cf8ce256c4b708f16c"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+
+// ── Field ─────────────────────────────────────────────────────────────────
+const FIELD_2026 = [
+  "Scottie Scheffler","Rory McIlroy","Jon Rahm","Ludvig Åberg","Xander Schauffele",
+  "Collin Morikawa","Tommy Fleetwood","Bryson DeChambeau","Cameron Young","Justin Rose",
+  "Si Woo Kim","Jake Knapp","Russell Henley","Corey Conners","Min Woo Lee",
+  "Robert MacIntyre","Sungjae Im","Max Homa","Brian Harman","Tony Finau",
+  "Viktor Hovland","Patrick Cantlay","Akshay Bhatia","Keegan Bradley","Jason Day",
+  "Jordan Spieth","Justin Thomas","Brooks Koepka","Hideki Matsuyama","Adam Scott",
+  "Dustin Johnson","Cameron Smith","Matt Fitzpatrick","Wyndham Clark","Tyrrell Hatton",
+  "Sam Burns","Daniel Berger","Harris English","Jacob Bridgeman","Michael Brennan",
+  "Haotong Li","Sam Stevens","Nick Taylor","Ryan Fox","Ben Griffin",
+  "Carlos Ortiz","Kurt Kitayama","Alex Noren","Casey Jarvis","Johnny Keefer",
+  "Max Greyserman","Tom Kim","Sepp Straka","Will Zalatoris","Patrick Reed",
+  "Sergio Garcia","Bubba Watson","Danny Willett","Charl Schwartzel","Zach Johnson",
+  "Angel Cabrera","Fred Couples","Jose Maria Olazabal","Vijay Singh","Bernhard Langer",
+  "Mike Weir","J.T. Poston","Taylor Pendrith","Aaron Rai","Davis Thompson",
+  "Nico Echavarria","Brian Campbell","Matthieu Pavon","Christiaan Bezuidenhout",
+  "An Byeong-hun","Thomas Detry","Billy Horschel","J.J. Spaun","Thriston Lawrence",
+  "Matt McCarty","Maverick McNealy","Adam Schenk","Cameron Davis",
+  "a-Ethan Fang","a-Mason Howell","a-Jackson Herrington","a-Brandon Holtz",
+  "a-Fifa Laopakdee","a-Mateo Pulcini"
+].sort((a,b)=>a.replace('a-','').localeCompare(b.replace('a-','')));
+
+// ── Scoring ───────────────────────────────────────────────────────────────
+const POINTS_TABLE = [
+  {label:"1st",pts:100},{label:"2nd",pts:75},{label:"3rd",pts:60},
+  {label:"4th",pts:50},{label:"5th",pts:45},{label:"6-10",pts:35},
+  {label:"11-15",pts:25},{label:"16-20",pts:20},{label:"21-30",pts:10},
+  {label:"31-40",pts:5},{label:"Made Cut (41+)",pts:1},{label:"Missed Cut",pts:0}
+];
+
+function posPoints(pos) {
+  if (!pos || pos <= 0) return 0;
+  if (pos===1)  return 100;
+  if (pos===2)  return 75;
+  if (pos===3)  return 60;
+  if (pos===4)  return 50;
+  if (pos===5)  return 45;
+  if (pos<=10)  return 35;
+  if (pos<=15)  return 25;
+  if (pos<=20)  return 20;
+  if (pos<=30)  return 10;
+  if (pos<=40)  return 5;
+  return 1;
+}
+
+function calcPts(g) {
+  if (!g) return 0;
+  const started = g.score !== null && g.score !== undefined && g.score !== '' && g.score !== '--';
+  if (!started) return 0;
+  if (g.madeCut === false) return 0;
+  return posPoints(g.position) + (g.eagles||0)*10 + (g.hio||0)*100;
+}
+
+function fmtScore(s) {
+  const n = parseInt(s);
+  if (isNaN(n)||n===0) return 'E';
+  return n>0?'+'+n:String(n);
+}
+
+// ── State ─────────────────────────────────────────────────────────────────
+// entries: { entryId: { name, picks: [g1,g2,g3,g4], createdAt } }
+// leaderboard: [ { name, position, score, thru, eagles, hio, madeCut } ]
+let S = {
+  view: 'loading',
+  entryId: localStorage.getItem('m26entry') || '',
+  adminMode: localStorage.getItem('m26admin') === '1',
+  tab: 'standings',
+  entries: {},
+  leaderboard: [],
+  lastUpdated: null,
+  loaded: false
+};
+
+// ── Firebase ──────────────────────────────────────────────────────────────
+db.ref('/').on('value', (snap) => {
+  const data = snap.val() || {};
+  S.entries = data.entries || {};
+  S.leaderboard = data.leaderboard
+    ? (Array.isArray(data.leaderboard) ? data.leaderboard : Object.values(data.leaderboard)).filter(Boolean)
+    : [];
+  S.lastUpdated = data.lastUpdated || null;
+  S.loaded = true;
+
+  // Determine view
+  if (S.adminMode) {
+    S.view = 'app';
+    S.entryId = 'admin';
+  } else if (S.entryId && S.entries[S.entryId]) {
+    S.view = 'app';
+  } else {
+    // Stale entry or no entry — go to login
+    if (S.entryId && !S.entries[S.entryId]) {
+      localStorage.removeItem('m26entry');
+      S.entryId = '';
+    }
+    S.view = 'login';
+  }
+
+  render();
+});
+
+function save() {
+  if (!S.loaded) return;
+  const lbObj = {};
+  S.leaderboard.forEach((g,i) => { lbObj['g'+i] = g; });
+  db.ref('/').update({ entries: S.entries, leaderboard: lbObj, lastUpdated: S.lastUpdated });
+}
+
+async function syncFromESPN() {
+  const msg = document.getElementById('lb-msg');
+  if (msg) msg.textContent = "Fetching live scores...";
+  
+  try {
+    const res = await fetch("https://site.api.espn.com/apis/site/v2/sports/golf/pga/scoreboard");
+    const data = await res.json();
+    const masters = data.events.find(e => e.name.toLowerCase().includes("masters"));
+    
+    if (!masters) {
+      alert("Masters tournament not found in live feed yet.");
+      return;
+    }
+
+    const competitors = masters.competitions[0].competitors;
+
+    // Parse each competitor
+    const parsed = competitors.map(c => {
+      const pName = c.athlete.displayName;
+      const existing = S.leaderboard.find(ex => ex && ex.name === pName);
+
+      // Score: convert "EVEN" → 0 for sorting, keep "E" for display
+      const rawScore = c.score;
+      const scoreDisplay = (rawScore === "EVEN" || rawScore === "E" || rawScore === "0") ? "E" : (rawScore || "E");
+      const scoreNum = (rawScore === "EVEN" || rawScore === "E") ? 0 : (parseInt(rawScore) || 0);
+
+      // Thru: ESPN gives hole-by-hole in linescores; fall back to status detail
+      let thru = "-";
+      const statusId = c.status?.type?.id;       // "1"=scheduled, "2"=in progress, "3"=cut/wd, "4"=complete
+      const shortDetail = c.status?.type?.shortDetail || "";
+
+      if (statusId === "3") {
+        // Missed cut / WD
+        thru = "CUT";
+      } else if (shortDetail === "F" || shortDetail === "Final" || statusId === "4") {
+        thru = "F";
+      } else if (statusId === "2") {
+        thru = "LIVE";
+      } else {
+        thru = "-";
+      }
+
+      const madeCut = statusId !== "3";
+
+      return {
+        name: pName,
+        scoreNum,                                 // numeric for sorting only
+        score: scoreDisplay,
+        thru,
+        eagles: existing ? (existing.eagles || 0) : 0,
+        hio:    existing ? (existing.hio    || 0) : 0,
+        madeCut
+      };
+    });
+
+    // ── Derive real positions by sorting on scoreNum ──────────────────────
+    // Separate made-cut from missed-cut so missed-cut always goes to the bottom
+    const active  = parsed.filter(g => g.madeCut !== false).sort((a, b) => a.scoreNum - b.scoreNum);
+    const cutList = parsed.filter(g => g.madeCut === false);
+
+    // Assign positions with tie-handling: tied players share the HIGHER (lower-numbered) rank
+    let rank = 1;
+    active.forEach((g, i) => {
+      if (i > 0 && g.scoreNum === active[i - 1].scoreNum) {
+        g.position = active[i - 1].position; // same rank as previous (tied → higher placement)
+      } else {
+        g.position = rank;
+      }
+      rank = i + 2; // next possible rank is i+2 (1-indexed)
+    });
+
+    cutList.forEach(g => { g.position = 999; });
+
+    // Remove the helper field before saving
+    const newLB = [...active, ...cutList].map(g => {
+      const { scoreNum, ...rest } = g;
+      return rest;
+    });
+
+    S.leaderboard = newLB;
+    S.lastUpdated = new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+    save();
+    render();
+    if (msg) msg.textContent = `Synced ${newLB.length} golfers. Bonuses preserved!`;
+  } catch (err) {
+    console.error(err);
+    alert("Failed to fetch scores: " + err.message);
+  }
+}
+
+// ── Scoring helpers ───────────────────────────────────────────────────────
+function scoreEntry(entryId) {
+  const e = S.entries[entryId];
+  if (!e || !e.picks) return { current:0, potential:0, breakdown:[] };
+  let current=0, potential=0, breakdown=[];
+  e.picks.forEach(name => {
+    if (!name) return;
+    const g = S.leaderboard.find(r => r && r.name && r.name.toLowerCase()===name.toLowerCase());
+    const pts = calcPts(g);
+    const bonuses = g ? (g.eagles||0)*3 + (g.hio||0)*10 : 0;
+    const pot = (g && g.madeCut===false) ? 0 : 100 + bonuses;
+    current += pts;
+    potential += pot;
+    breakdown.push({ name, current:pts, potential:pot, g });
+  });
+  return { current, potential, breakdown };
+}
+
+function allStandings() {
+  return Object.entries(S.entries)
+    .filter(([id]) => id !== 'admin')
+    .filter(([, e]) => e.picks && e.picks.some(p=>p))
+    .map(([id, e]) => ({ id, name: e.name||id, ...scoreEntry(id) }))
+    .sort((a,b) => b.current-a.current || b.potential-a.potential);
+}
+
+// ── Render ────────────────────────────────────────────────────────────────
+function render() {
+  const root = document.getElementById('root');
+  if (!root) return;
+  if (S.view==='loading') { root.innerHTML='<div class="loading">Connecting...</div>'; return; }
+  if (S.view==='login')   { root.innerHTML=renderLogin(); }
+  else                    { root.innerHTML=renderApp(); }
+  bind();
+}
+
+// ── LOGIN — just enter your name ──────────────────────────────────────────
+function renderLogin() {
+  return `<div class="app"><div style="max-width:420px;margin:3rem auto">
+    <div style="text-align:center;margin-bottom:1.5rem">
+      <div style="font-size:42px">&#9971;</div>
+      <h1 style="font-size:24px;font-weight:700;color:#1a5c2e;margin-top:8px">Masters Pool 2026</h1>
+      <p style="font-size:13px;color:#888;margin-top:4px">Augusta National &middot; April 9&ndash;12, 2026</p>
+    </div>
+    <div class="card">
+      <label style="font-size:14px;margin-bottom:8px">Enter your name to view or create your entry</label>
+      <input type="text" id="inp-name" placeholder="e.g. Jake Smith" autocomplete="name" style="margin-bottom:12px;font-size:16px;height:48px">
+      <button class="btn btn-primary" id="btn-enter" style="width:100%;height:48px;font-size:15px">Go &rarr;</button>
+      <div class="divider"></div>
+      <div style="text-align:center"><button class="btn btn-sm" id="btn-admin-login" style="color:#888">Admin Login</button></div>
+    </div>
+  </div></div>`;
+}
+
+// ── MAIN APP ──────────────────────────────────────────────────────────────
+function renderApp() {
+  const tabs = [
+    {id:'standings', label:'Standings'},
+    {id:'my-picks',  label:'My Picks'},
+    {id:'golfers',   label:'Golfers'},
+    {id:'scoring',   label:'Scoring'}
+  ];
+  if (S.adminMode) tabs.push({id:'admin', label:'Admin'});
+
+  const myName = S.adminMode ? 'Admin' : (S.entries[S.entryId]?.name || '');
+
+  return `<div class="app">
+    <div class="header">
+      <div>
+        <h1>&#9971; Masters Pool 2026</h1>
+        <div class="header-sub">Hi, ${myName} &middot; Augusta National, April 9&ndash;12</div>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center">
+        ${S.lastUpdated?`<span class="badge">Updated ${S.lastUpdated}</span>`:''}
+        <button class="btn btn-sm" id="btn-logout" style="background:rgba(255,255,255,0.15);border-color:transparent;color:#fff">Leave</button>
+      </div>
+    </div>
+    <div class="tab-bar">
+      ${tabs.map(t=>`<button class="tab${S.tab===t.id?' active':''}" data-tab="${t.id}">${t.label}</button>`).join('')}
+    </div>
+    ${S.tab==='standings' ? renderStandings() : ''}
+    ${S.tab==='my-picks'  ? renderMyPicks()   : ''}
+    ${S.tab==='golfers'   ? renderGolfers()   : ''}
+    ${S.tab==='scoring'   ? renderScoring()   : ''}
+    ${S.tab==='admin'     ? renderAdmin()     : ''}
+  </div>`;
+}
+
+// ── STANDINGS ─────────────────────────────────────────────────────────────
+function renderStandings() {
+  const list = allStandings();
+  const me = S.adminMode ? {current:0,potential:0} : scoreEntry(S.entryId);
+
+  return `
+  ${!S.adminMode ? `<div class="grid2" style="margin-bottom:1rem">
+    <div class="stat-card"><div class="stat-val">${me.current}</div><div class="stat-lbl">My Current Points</div></div>
+    <div class="stat-card"><div class="stat-val" style="color:#2d7d9a">${me.potential}</div><div class="stat-lbl">My Max Potential</div></div>
+  </div>` : ''}
+  <div class="card">
+    <div class="card-title">${list.length} entr${list.length===1?'y':'ies'} &middot; live standings</div>
+    ${!list.length ? '<div class="empty">No entries yet. Be the first!</div>' : ''}
+    <div style="display:grid;grid-template-columns:36px 1fr 80px 80px;gap:8px;padding:0 12px 8px;font-size:11px;color:#999;font-weight:600;text-transform:uppercase">
+      <span></span><span>Name</span><span style="text-align:right">Points</span><span style="text-align:right">Max</span>
+    </div>
+    ${list.map((s,i) => {
+      const isMe = s.id === S.entryId;
+      const rc = i===0?'rank-1':i===1?'rank-2':i===2?'rank-3':'';
+      const picks = (S.entries[s.id]?.picks||[]).filter(p=>p);
+      return `<div class="standings-row${isMe?' me':''}">
+        <div class="rank-badge ${rc}">${i+1}</div>
+        <div>
+          <div style="font-weight:600">${s.name}${isMe?' <span style="font-size:10px;background:#1a5c2e;color:#fff;border-radius:3px;padding:1px 5px;margin-left:4px">you</span>':''}</div>
+          <div style="margin-top:3px">${picks.map(p => {
+            const g = S.leaderboard.find(r=>r&&r.name&&r.name.toLowerCase()===p.toLowerCase());
+            return `<span class="golfer-tag">${p.split(' ').slice(-1)[0].replace('a-','')} <span class="gpts">${calcPts(g)}pt</span></span>`;
+          }).join('')}</div>
+        </div>
+        <div style="text-align:right;font-weight:700;font-size:16px;color:#1a5c2e">${s.current}</div>
+        <div style="text-align:right" class="potential">${s.potential}</div>
+      </div>`;
+    }).join('')}
+  </div>`;
+}
+
+// ── MY PICKS ──────────────────────────────────────────────────────────────
+function renderMyPicks() {
+  if (S.adminMode) return `<div class="card"><div class="empty">Admins don't have picks.</div></div>`;
+  const entry = S.entries[S.entryId] || {};
+  const picks = entry.picks || ['','','',''];
+  const isLocked = entry.locked === true;
+  const sc = scoreEntry(S.entryId);
+
+  return `
+  <div class="card">
+    <div class="card-title">My 4 Picks</div>
+    ${isLocked 
+      ? `<div class="alert alert-gold" style="text-align:center; font-weight:700">🔒 PICKS LOCKED</div>` 
+      : `<div class="alert alert-info">Pick 4 golfers. Once locked, they cannot be changed.</div>`}
+    
+    ${[0,1,2,3].map(i=>`
+    <div style="margin-bottom:12px">
+      <label>Pick ${i+1}</label>
+      <select class="pick-sel pick-inp" data-i="${i}" ${isLocked ? 'disabled' : ''}>
+        <option value="" ${!picks[i]?'selected':''}>-- Select a golfer --</option>
+        ${FIELD_2026.map(g=>`<option value="${g}" ${picks[i]===g?'selected':''}>${g.replace('a-','(A) ')}</option>`).join('')}
+      </select>
+    </div>`).join('')}
+
+    ${isLocked 
+      ? `<button class="btn" style="width:100%; opacity:0.6" disabled>Confirmed</button>`
+      : `<button class="btn btn-primary" id="btn-save-picks" style="width:100%;height:44px">Lock In My Picks</button>`}
+    <div id="save-msg" style="text-align:center;margin-top:10px;font-size:14px;color:#1a5c2e;font-weight:600"></div>
+  </div>
+
+  ${picks.some(p => p) ? `
+    <div class="card" style="overflow-x:auto">
+      <div class="card-title">My Breakdown</div>
+      <table class="tbl">
+        <thead><tr><th>Golfer</th><th>Pos</th><th>Score</th><th>Pts</th></tr></thead>
+        <tbody>
+          ${sc.breakdown.map(b => `
+            <tr>
+              <td style="font-weight:600">${b.name.replace('a-','')}</td>
+              <td>${b.g ? (b.g.madeCut === false || b.g.position >= 999 ? '<span class="cut-badge">CUT</span>' : b.g.position) : '-'}</td>
+              <td>${b.g ? fmtScore(b.g.score) : '-'}</td>
+              <td style="font-weight:700;color:#1a5c2e">${b.current}</td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>
+    </div>
+  ` : ''}`;
+}
+
+// ── GOLFERS ───────────────────────────────────────────────────────────────
+function renderGolfers() {
+  const sorted = [...S.leaderboard].filter(Boolean).sort((a,b)=>{
+    if (a.madeCut===false && b.madeCut!==false) return 1;
+    if (b.madeCut===false && a.madeCut!==false) return -1;
+    return a.position - b.position;
+  });
+  if (!sorted.length) return `<div class="card"><div class="empty">Leaderboard will appear once the tournament starts April 9th.</div></div>`;
+  return `<div class="card">
+    <div class="card-title">2026 Masters Leaderboard &middot; ${sorted.length} golfers</div>
+    <table class="tbl">
+      <thead><tr><th>Pos</th><th>Golfer</th><th>Score</th><th>Thru</th><th>Eagles</th><th>HiO</th><th>Pts</th></tr></thead>
+      <tbody>${sorted.map(g=>{
+        const n=parseInt(g.score)||0;
+        return `<tr>
+          <td style="font-weight:700">${(g.madeCut===false||g.position>=999)?'<span class="cut-badge">CUT</span>':g.position}</td>
+          <td style="font-weight:600">${(g.name||'').replace('a-','')}</td>
+          <td><span class="${n<0?'score-neg':n>0?'score-pos':'score-e'}">${fmtScore(g.score)}</span></td>
+          <td style="color:#888">${g.thru==='LIVE'?'<span class="live-badge"><span class="live-dot"></span>Live</span>':g.thru||'-'}</td>
+          <td style="text-align:center">${g.eagles>0?`<span style="color:#1a5c2e;font-weight:700">${g.eagles}</span>`:'-'}</td>
+          <td style="text-align:center">${g.hio>0?`<span style="color:#c0392b;font-weight:700">${g.hio}</span>`:'-'}</td>
+          <td style="font-weight:700;color:#1a5c2e">${calcPts(g)}</td>
+        </tr>`;
+      }).join('')}</tbody>
+    </table>
+    <p style="font-size:11px;color:#aaa;margin-top:8px">Eagles +10 pts &middot; Hole-in-ones +100 pts</p>
+  </div>`;
+}
+
+// ── SCORING ───────────────────────────────────────────────────────────────
+function renderScoring() {
+  return `<div class="card">
+    <div class="card-title">Scoring System</div>
+    <table class="tbl">
+      <thead><tr><th>Position</th><th>Points</th></tr></thead>
+      <tbody>${POINTS_TABLE.map((r,i)=>`<tr style="${i===0?'background:#fdf6e3':i%2===0?'background:#fafaf8':''}">
+        <td style="${i===0?'font-weight:700':''}">${r.label}</td>
+        <td style="font-weight:700;color:#1a5c2e">${r.pts}</td>
+      </tr>`).join('')}</tbody>
+    </table>
+    <div class="divider"></div>
+    <div style="display:flex;gap:12px">
+      <div class="stat-card" style="flex:1">
+        <div class="stat-val">+10</div>
+        <div class="stat-lbl">Per Eagle</div>
+      </div>
+      <div class="stat-card" style="flex:1">
+        <div class="stat-val" style="color:#c0392b">+100</div>
+        <div class="stat-lbl">Per Hole-in-One</div>
+      </div>
+    </div>
+    <div class="divider"></div>
+    <p style="font-size:12px;color:#888;line-height:1.6"><strong>Max Potential</strong> = best possible score if your golfers win. Used as tiebreaker. Missed cut = 0 pts.</p>
+  </div>`;
+}
+
+// ── ADMIN ─────────────────────────────────────────────────────────────────
+function adminRow(g, i) {
+  return `<div class="admin-row" data-i="${i}" style="display:grid;grid-template-columns:2fr 50px 60px 50px 58px 55px 80px 28px;gap:5px;margin-bottom:5px;align-items:center">
+    <input list="field-list-admin" class="ar-name" placeholder="Golfer name" value="${g.name||''}">
+    <input type="number" class="ar-pos" min="1" max="200" value="${g.position||1}" style="text-align:center" title="Position">
+    <input class="ar-score" value="${g.score||'E'}" style="text-align:center" title="Score vs par">
+    <input class="ar-thru" value="${g.thru||'F'}" style="text-align:center" title="Thru">
+    <input type="number" class="ar-eagles" min="0" value="${g.eagles||0}" style="text-align:center" title="Eagles">
+    <input type="number" class="ar-hio" min="0" value="${g.hio||0}" style="text-align:center" title="Hole-in-ones">
+    <select class="ar-cut">
+      <option value="true" ${g.madeCut!==false?'selected':''}>Made Cut</option>
+      <option value="false" ${g.madeCut===false?'selected':''}>Missed Cut</option>
+    </select>
+    <button class="btn btn-sm rm-btn" style="padding:4px 6px;color:#c0392b;border-color:#f5c0c0">x</button>
+  </div>`;
+}
+
+function renderAdmin() {
+  const rows = S.leaderboard.filter(Boolean);
+  const display = rows.length ? rows : [{name:'',position:1,score:'E',thru:'F',eagles:0,hio:0,madeCut:true}];
+  const entryList = Object.entries(S.entries).filter(([id])=>id!=='admin');
+  return `
+  <div class="card">
+    <div class="card-title">Update Leaderboard</div>
+    <div class="alert alert-info" style="margin-bottom:1rem">Copy standings from <strong>masters.com</strong> or <strong>ESPN</strong>. Eagles and hole-in-ones are cumulative tournament totals.</div>
+    <div style="overflow-x:auto"><div style="min-width:600px">
+      <div style="display:grid;grid-template-columns:2fr 50px 60px 50px 58px 55px 80px 28px;gap:5px;padding-bottom:6px;font-size:10px;font-weight:700;color:#999;text-transform:uppercase">
+        <span>Golfer</span><span>Pos</span><span>Score</span><span>Thru</span><span>Eagles</span><span>HiO</span><span>Status</span><span></span>
+      </div>
+      <div id="admin-rows">${display.map((g,i)=>adminRow(g,i)).join('')}</div>
+    </div></div>
+    <datalist id="field-list-admin">${FIELD_2026.map(g=>`<option value="${g}">`).join('')}</datalist>
+      <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+      <button class="btn btn-sm" id="btn-add-row">+ Add Row</button>
+      <button class="btn btn-primary" id="btn-save-lb">Save &amp; Publish</button>
+      <button class="btn btn-primary" id="btn-sync-espn" style="background:#2d7d9a; border-color:#2d7d9a; color:white">🔄 Sync with ESPN</button>
+      <button class="btn btn-sm btn-danger" id="btn-clear-lb">Clear All</button>
+    </div>
+    <div id="lb-msg" style="margin-top:8px;font-size:13px;color:#1a5c2e;font-weight:600"></div>
+  </div>
+  <div class="card">
+    <div class="card-title">All Entries (${entryList.length})</div>
+    ${!entryList.length ? '<div class="empty">No entries yet</div>' :
+    `<table class="tbl"><thead><tr><th>Name</th><th>Picks</th><th>Points</th><th>Max</th><th></th></tr></thead><tbody>
+    ${entryList.map(([id,e])=>{
+      const sc=scoreEntry(id);
+      return `<tr>
+        <td style="font-weight:600">${e.name||id}</td>
+        <td style="font-size:12px">${(e.picks||[]).filter(p=>p).join(', ')||'-'}</td>
+        <td style="font-weight:700;color:#1a5c2e">${sc.current}</td>
+        <td class="potential">${sc.potential}</td>
+        <td><button class="btn btn-sm del-entry-btn" data-id="${id}" style="color:#c0392b;border-color:#f5c0c0;padding:3px 8px">Del</button></td>
+      </tr>`;
+    }).join('')}
+    </tbody></table>`}
+  </div>`;
+}
+
+// ── Bind ──────────────────────────────────────────────────────────────────
+function bind() {
+  const $ = id => document.getElementById(id);
+  const qsa = sel => document.querySelectorAll(sel);
+
+  // LOGIN — just enter name, create or resume entry
+  if ($('btn-enter')) {
+    $('btn-enter').onclick = () => {
+      const name = ($('inp-name').value||'').trim();
+      if (name.length < 2) { alert('Please enter your name (at least 2 characters).'); return; }
+
+      // Make a safe Firebase key from the name
+      const uid = name.toLowerCase().replace(/\s+/g,'_').replace(/[^a-z0-9_]/g,'');
+      if (!uid) { alert('Please use letters and numbers in your name.'); return; }
+
+      S.entryId = uid;
+      localStorage.setItem('m26entry', uid);
+
+      // Create entry if it doesn't exist yet
+      if (!S.entries[uid]) {
+        S.entries[uid] = { name, picks: ['','','',''], createdAt: Date.now() };
+        save();
+      }
+
+      S.view = 'app';
+      S.tab = 'my-picks'; // Send new users straight to picks
+      render();
+    };
+
+    // Allow pressing Enter key on the input
+    const inp = $('inp-name');
+    if (inp) inp.onkeydown = e => { if (e.key==='Enter') $('btn-enter').click(); };
+  }
+
+  if ($('btn-admin-login')) {
+    $('btn-admin-login').onclick = () => {
+      const pw = prompt('Admin password:');
+      if (pw === 'eddiebadellikespenis') {
+        S.adminMode = true;
+        S.entryId = 'admin';
+        localStorage.setItem('m26admin','1');
+        localStorage.setItem('m26entry','admin');
+        S.view = 'app';
+        S.tab = 'admin';
+        render();
+      } else if (pw !== null) {
+        alert('Incorrect password.');
+      }
+    };
+  }
+
+  if ($('btn-logout')) {
+    $('btn-logout').onclick = () => {
+      S.entryId = '';
+      S.adminMode = false;
+      localStorage.clear(); // This clears m26entry and m26admin at once
+      S.view = 'login';
+      render();
+    };
+  }
+
+  qsa('[data-tab]').forEach(b => b.onclick = () => { S.tab = b.dataset.tab; render(); });
+
+  // SAVE PICKS
+  if ($('btn-save-picks')) {
+  $('btn-save-picks').onclick = () => {
+    const picks = Array.from(qsa('.pick-inp')).map(el => el.value.trim());
+    if (picks.some(p => !p)) { alert("Please select all 4 golfers!"); return; }
+
+    // Triple Confirmation
+    if (confirm("Are you sure? Once you lock these picks, they cannot be changed for the rest of the tournament.")) {
+      if (confirm("Double-check your golfers. Ready to lock them in?")) {
+        if (confirm("FINAL WARNING: Click OK to lock your picks forever.")) {
+          if (!S.entries[S.entryId]) S.entries[S.entryId] = { name: S.entryId };
+          S.entries[S.entryId].picks = picks;
+          S.entries[S.entryId].locked = true; // Set the lock
+          save();
+          render();
+        }
+      }
+    }
+  };
+}
+
+  // ADMIN — add leaderboard row
+  if ($('btn-add-row')) {
+    $('btn-add-row').onclick = () => {
+      const container = $('admin-rows');
+      const i = container.querySelectorAll('.admin-row').length;
+      const div = document.createElement('div');
+      div.innerHTML = adminRow({name:'',position:i+1,score:'E',thru:'F',eagles:0,hio:0,madeCut:true}, i);
+      container.appendChild(div.firstElementChild);
+      bindRm();
+    };
+  }
+
+  // ADMIN — save leaderboard
+  if ($('btn-save-lb')) {
+    $('btn-save-lb').onclick = () => {
+      const lb = [];
+      qsa('.admin-row').forEach(row => {
+        const name = row.querySelector('.ar-name').value.trim();
+        if (!name) return;
+        lb.push({
+          name,
+          position: parseInt(row.querySelector('.ar-pos').value)||1,
+          score: row.querySelector('.ar-score').value||'E',
+          thru: row.querySelector('.ar-thru').value||'F',
+          eagles: parseInt(row.querySelector('.ar-eagles').value)||0,
+          hio: parseInt(row.querySelector('.ar-hio').value)||0,
+          madeCut: row.querySelector('.ar-cut').value==='true'
+        });
+      });
+      S.leaderboard = lb;
+      S.lastUpdated = new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+      save();
+      const msg = $('lb-msg');
+      if (msg) { msg.textContent = lb.length+' golfers published to all users!'; setTimeout(()=>{ if($('lb-msg')) $('lb-msg').textContent=''; },3000); }
+    };
+  }
+
+  if ($('btn-sync-espn')) {
+    $('btn-sync-espn').onclick = () => {
+      if (confirm("This will overwrite your current leaderboard with live data from ESPN. Continue?")) {
+        syncFromESPN();
+      }
+    };
+  }
+
+  // ADMIN — clear leaderboard
+  if ($('btn-clear-lb')) {
+    $('btn-clear-lb').onclick = () => {
+      if (confirm('Clear all leaderboard data?')) { S.leaderboard=[]; S.lastUpdated=null; save(); render(); }
+    };
+  }
+
+  // ADMIN — delete entry
+  qsa('.del-entry-btn').forEach(b => {
+    b.onclick = () => {
+      const id = b.dataset.id;
+      const name = S.entries[id]?.name || id;
+      if (confirm(`Delete entry for "${name}"?`)) {
+        delete S.entries[id];
+        save();
+        render();
+      }
+    };
+  });
+
+  bindRm();
+}
+
+function bindRm() {
+  document.querySelectorAll('.rm-btn').forEach(b => {
+    b.onclick = () => { const row = b.closest('.admin-row'); if (row) row.remove(); };
+  });
+}
+</script>
+</body>
+</html>
